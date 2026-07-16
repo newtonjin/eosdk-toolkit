@@ -1,83 +1,31 @@
 # EOSLANKit
 
-Ferramenta universal com GUI para jogos **Unreal Engine + Steam + Epic Online Services (EOS)** rodarem em **LAN/offline** sem depender de matchmaking oficial.
+EOSLANKit helps you play Unreal Engine games that use Steam and Epic Online Services (EOS) with friends over LAN or offline, without official Steam/Epic matchmaking.
 
-Funciona com qualquer jogo que carregue `EOSSDK*.dll` (Palworld já validado; outros títulos UE com EOS devem funcionar direto).
+It is meant for your own game copies and your own dedicated server (for example over Hamachi or Radmin). It is not a crack for official online servers.
 
-## Início rápido
+The tool walks you through Steam DRM unpack (Steamless), Steam API emulation (Goldberg), an EOS SDK proxy DLL, optional EXE patches, and a simple launcher. It works with games that ship EOSSDK*.dll. Palworld was tested; other UE + EOS titles should work the same way.
 
-1. Instale **Python 3** e **LLVM/clang** (para compilar a proxy). Aponte o clang na GUI.
-2. Baixe uma `steam_api64.dll` do **Goldberg Emulator** (Windows x64) e guarde em algum lugar — vai ser reusada em todos os jogos.
-3. Baixe **Steamless.CLI.exe** (https://github.com/atom0s/Steamless) — necessário para jogos com stub DRM Steam. Aponte na GUI ou use `Auto`.
-4. Execute `Launch.bat`.
-5. Aponte a pasta do jogo → **Analisar** → **Aplicar setup** → **Jogar**.
+How to use it
 
-## O que o EOSLANKit faz
+Install Python 3 and LLVM/clang (needed to build the EOS proxy). Download a Goldberg steam_api64.dll (Windows x64) and Steamless.CLI.exe from https://github.com/atom0s/Steamless. Run Launch.bat, point it at your game folder, click Analyze, then Apply setup, then Play. You can set SteamID, nickname, and paths for Goldberg and Steamless in the GUI.
 
-| Ação | Efeito |
-|------|--------|
-| **Steamless** | Detecta stub Steam DRM (`.bind`/`SteamStub`) no EXE e invoca `Steamless.CLI.exe` para unpack. Backup `*.exe.steamdrm.bak`. Skip se não wrapped |
-| **Goldberg** | Copia `steam_api64.dll` para raiz + todo `Engine/Binaries/ThirdParty/Steamworks/Steamv*/Win64/` + `Binaries/Win64/` |
-| **steam_settings** | Escreve `configs.user.ini/main.ini/app.ini/custom_broadcasts.txt/steam_appid.txt` em todos os locais que o Goldberg lê |
-| **Proxy EOS** | Compila DLL zero-CRT (~55 KB) com 10 hooks + forward do resto pra `EOSSDK_orig.dll` |
-| **Patch EXE** | Delay-load MSVC ou offsets pré-mapeados em `known_offsets.json` (indexado por sha256) |
-| **Launcher** | Gera `Play-<Game>.bat` que roda o Shipping direto e fecha popup residual do EOS via `PostMessage Enter` |
-| **Verify** | Health-check pós-instalação (proxy, backups, INIs, DLLs Goldberg) |
-| **Perfis** | `config/profiles/<hash>.json` — reaplica/restaura tudo de qualquer jogo já configurado |
+What it does
 
-## Estrutura do kit
+Steamless unpacks Steam DRM stubs on the game EXE when needed. Goldberg replaces steam_api64.dll and writes steam_settings so the game thinks Steam is present. The EOS proxy replaces EOSSDK-Win64-Shipping.dll, keeps a backup as EOSSDK_orig.dll, and reports a logged-in EOS session so multiplayer UI stays enabled. Optional EXE patching covers delay-load EOS stubs. A Play-Game.bat launcher starts the shipping EXE and dismisses leftover EOS popups. Profiles remember each game so you can reapply or restore later.
 
-```
-EOSLANKit/
-├── Launch.bat              # Abre a GUI
-├── gui/launcher.py         # Interface tkinter
-├── src/                    # Código C da proxy EOS
-├── tools/                  # Scripts Python
-│   ├── detect.py           # Detecta EOSSDK + Shipping + Steamworks
-│   ├── steamless.py        # Detecta e remove stub Steam DRM via Steamless.CLI
-│   ├── goldberg.py         # Instala steam_api64.dll Goldberg
-│   ├── steam_settings.py   # Escreve configs Goldberg
-│   ├── gen_def.py          # .def com forwards
-│   ├── exe_patcher.py      # Patch (delay-load ou known_offsets)
-│   ├── install_proxy.py    # Instala proxy + backup
-│   ├── launcher_gen.py     # Gera Play-<Game>.bat/.ps1
-│   ├── profile.py          # Perfil por jogo
-│   ├── verify.py           # Health-check pos-instalacao
-│   ├── setup.py            # Orquestrador
-│   ├── uninstall_proxy.py  # Restaura EOSSDK original
-│   └── restore_exe.py      # Restaura EXE original
-├── build/                  # build.ps1 / proxy compilada
-└── config/
-    ├── intercepted.json    # Exports hook + globs de descoberta
-    ├── defaults.json       # SteamID/nick/broadcast + goldberg_source
-    ├── known_offsets.json  # Offsets EXE por sha256
-    └── profiles/           # Perfis por jogo (gerado)
-```
+Requirements
 
-## Restaurar tudo
+Windows 10/11 x64, Python 3, LLVM/clang with Windows SDK (kernel32.lib), Goldberg steam_api64.dll, and Steamless.CLI.exe when the EXE is Steam-wrapped.
 
-- **EOSSDK:** botão *Restaurar EOSSDK* na GUI (ou `tools/uninstall_proxy.py`).
-- **EXE:** botão *Restaurar EXE* (usa `.eoslankit.bak`) ou `tools/restore_exe.py`.
+Build a standalone EXE
 
-## Requisitos
+Run: powershell -NoProfile -ExecutionPolicy Bypass -File build-exe.ps1
 
-- Windows 10/11 x64
-- Python 3.x
-- LLVM/clang 64-bit (`clang`, `lld-link`)
-- Windows SDK (`kernel32.lib`)
-- Uma `steam_api64.dll` do Goldberg (obtenha manualmente uma vez)
-- `Steamless.CLI.exe` (para jogos com stub Steam DRM)
+That uses PyInstaller and creates dist/EOSLANKit/. Launch.bat prefers that EXE when it exists.
 
-## Gerar `EOSLANKit.exe`
+Restore
 
-```bat
-powershell -NoProfile -ExecutionPolicy Bypass -File build-exe.ps1
-```
+Use Restore EOSSDK or Restore EXE in the GUI, or the matching scripts under tools/.
 
-Requer Python 3. O script instala PyInstaller e produz `dist/EOSLANKit/EOSLANKit.exe` + pasta `_internal/`. Distribua a pasta `dist/EOSLANKit/` inteira. Na primeira execução, o `.exe` extrai `config/`, `build/` e `src/` para o próprio diretório (assim `defaults.json`, `profiles/` e `known_offsets.json` ficam editáveis).
-
-O `Launch.bat` detecta automaticamente `dist/EOSLANKit/EOSLANKit.exe` e prefere ele sobre o modo Python.
-
-## Créditos
-
-**Made By: n3sec** — [n3sec.com](https://n3sec.com)
+Made by n3sec — https://n3sec.com
