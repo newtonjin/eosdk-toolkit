@@ -1,0 +1,44 @@
+{
+  "orig_dll_name": "EOSSDK_orig.dll",
+  "intercepted_exports": [
+    "EOS_Auth_GetLoginStatus",
+    "EOS_Connect_GetLoginStatus",
+    "EOS_Auth_GetLoggedInAccountsCount",
+    "EOS_Connect_GetLoggedInUsersCount",
+    "EOS_Auth_GetLoggedInAccountByIndex",
+    "EOS_Connect_GetLoggedInUserByIndex",
+    "EOS_Connect_Login",
+    "EOS_Auth_Login",
+    "EOS_ProductUserId_IsValid",
+    "EOS_EpicAccountId_IsValid"
+  ],
+  "exe_patch_returns": {
+    "EOS_Auth_GetLoginStatus": 2,
+    "EOS_Connect_GetLoginStatus": 2,
+    "EOS_Auth_GetLoggedInAccountsCount": 1,
+    "EOS_Connect_GetLoggedInUsersCount": 1
+  },
+  "eos_dll_globs": [
+    "**/EOSSDK-Win64-Shipping*.dll",
+    "**/EOSSDK-Win32-Shipping*.dll",
+    "**/EOSSDK*.dll"
+  ],
+  "shipping_exe_globs": [
+    "**/*-Win64-Shipping.exe",
+    "**/*-Win32-Shipping.exe",
+    "**/*Shipping.exe"
+  ],
+  "goldberg_dll_globs": [
+    "steam_api64.dll",
+    "steam_api.dll"
+  ],
+  "steamworks_search_globs": [
+    "Engine/Binaries/ThirdParty/Steamworks/Steamv*/Win64",
+    "Engine/Binaries/ThirdParty/Steamworks/Steamv*/Win32",
+    "Binaries/ThirdParty/Steamworks/Steamv*/Win64"
+  ],
+  "steam_settings_dir_name": "steam_settings",
+  "launcher_batch_prefix": "Play",
+  "proxy_max_size_bytes": 524288,
+  "original_min_size_bytes": 1048576
+}

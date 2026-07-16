@@ -1,0 +1,54 @@
+# --- Terceiros (baixe separado; NÃO versionar) ---
+Goldberg_Lan_Steam_Emu_master*/
+Goldberg*/
+Steamless*/
+**/steam_api64.dll
+**/steam_api.dll
+**/steamclient*.dll
+
+# --- Build / dist (gerados) ---
+dist/
+build/pyinstaller/
+build/*.dll
+build/*.lib
+build/*.exp
+build/*.obj
+build/*.pdb
+build/*.def
+*.o
+*.obj
+*.exp
+*.pdb
+*.ilk
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# --- Config local / perfis de jogos (caminhos da máquina) ---
+config/user_settings.json
+config/profiles/
+*.eoslkid
+
+# --- Backups gerados no jogo ---
+*.steamdrm.bak
+*.eoslankit.bak
+*.steamorig
+EOSSDK_orig.dll
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Agente / scratch ---
+.cursor/
+agent-transcripts/

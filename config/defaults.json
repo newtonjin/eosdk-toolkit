@@ -1,0 +1,13 @@
+{
+  "default_steam_id": "76561197960287930",
+  "default_account_name": "Player",
+  "default_language": "brazilian",
+  "default_ip_country": "BR",
+  "default_app_id": "",
+  "default_broadcasts": [
+    "25.255.255.255",
+    "255.255.255.255"
+  ],
+  "goldberg_dll_source": "",
+  "steamless_cli_path": ""
+}

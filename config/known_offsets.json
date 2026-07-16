@@ -1,0 +1,15 @@
+{
+  "_comment": "Fallback offsets por sha256 do EXE quando delay-import EOSSDK nao esta exposto. Cada entrada mapeia funcao -> offset em disco. Valores tem prioridade sobre exe_patch_returns.",
+  "entries": {
+    "b5c73ef10b942ced2101131f35a03123af53892c0167fb3e9642d66fe49948b6": {
+      "game": "Palworld",
+      "exe_name": "Palworld-Win64-Shipping.exe",
+      "notes": "Build Palworld ~mai/2025; offsets originais do Hamachi/Patch-EOS.ps1 (analise Ghidra).",
+      "offsets": {
+        "EOS_Auth_GetLoginStatus":            { "offset": "0x5B15DF2", "return": 1 },
+        "EOS_Auth_GetLoggedInAccountsCount":  { "offset": "0x5B15F7E", "return": 1 },
+        "EOS_Connect_GetLoggedInUsersCount":  { "offset": "0x5B15FAE", "return": 1 }
+      }
+    }
+  }
+}
